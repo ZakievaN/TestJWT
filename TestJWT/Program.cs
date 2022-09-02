@@ -41,7 +41,7 @@ class Program
         var response = GetRestClient(ProductUrl, token);
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
-            responceContent = (string)JsonConvert.DeserializeObject(response.Content);
+            responceContent = response.Content;
         }
         return responceContent;
     }
@@ -83,10 +83,10 @@ class Program
         return encodedToken;
     }
 
-    private static RestResponse GetRestClientToken(string requestUrl, string token)
+    private static IRestResponse GetRestClientToken(string requestUrl, string token)
     {
         var client = new RestClient(requestUrl);
-        var request = new RestRequest("/", Method.Post);
+        var request = new RestRequest("/", Method.POST);
         string jsonToSend = JsonConvert.SerializeObject(new { jwt = token });
 
         request.AddParameter("application/json", jsonToSend, ParameterType.RequestBody);
@@ -95,14 +95,14 @@ class Program
         return client.Execute(request);
     }
     
-    private static RestResponse GetRestClient(string requestUrl, string token)
+    private static IRestResponse GetRestClient(string requestUrl, string token)
     {
         var client = new RestClient(requestUrl);
-        var request = new RestRequest("", Method.Get);
+        var request = new RestRequest("", Method.GET);
         
-        request.AddParameter("dtfrom", "2022-07-01T00:00:01.0000001Z");
+        request.AddParameter("dtfrom", "2022-02-01T00:00:01.0000001Z");
         request.AddParameter("page_number", 1);
-        request.AddParameter("page_size", 10);
+        request.AddParameter("page_size", 10000);
         request.AddHeader("Authorization", $"Bearer {token}");
 
         return client.Execute(request);
